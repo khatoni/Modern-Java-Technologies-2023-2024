@@ -8,7 +8,8 @@
 
 Създайте публичен клас `BrokenKeyboard` с метод:
 
-`public static int calculateFullyTypedWords(String message, String brokenKeys);`
+```public static int calculateFullyTypedWords(String message, String brokenKeys);
+```
 който за всяко изречение `(message)`, което Сашко иска да изпрати, пресмята колко от думите на съобщението могат да се напишат, без да се използват изредените счупени клавиши`(brokenKeys)`.
 ## !! Важно
 * За дума приемаме последователност от символи (n > 0), като разделител в съобщението е интервал `(' ')`
