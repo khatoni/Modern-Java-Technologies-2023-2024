@@ -8,6 +8,10 @@ public class PairComparatorDistance implements Comparator<MyPair> {
 
     @Override
     public int compare(MyPair firstPair, MyPair secondPair) {
-        return (int)(firstPair.heuristic() - secondPair.heuristic());
+        if (Double.compare(firstPair.heuristic(), secondPair.heuristic()) == 0) {
+            return firstPair.city().name().compareTo(secondPair.city().name());
+        } else {
+            return Double.compare(firstPair.heuristic(), secondPair.heuristic());
+        }
     }
 }

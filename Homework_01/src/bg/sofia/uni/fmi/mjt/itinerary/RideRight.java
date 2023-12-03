@@ -1,7 +1,6 @@
 package bg.sofia.uni.fmi.mjt.itinerary;
 
 import bg.sofia.uni.fmi.mjt.itinerary.comparator.PairComparatorDistance;
-import bg.sofia.uni.fmi.mjt.itinerary.comparator.PairComparatorLexicographic;
 import bg.sofia.uni.fmi.mjt.itinerary.exception.CityNotKnownException;
 import bg.sofia.uni.fmi.mjt.itinerary.exception.NoPathToDestinationException;
 
@@ -23,10 +22,6 @@ public class RideRight implements ItineraryPlanner {
     private final List<Journey> journeys;
     private final Set<City> allCities;
 
-    private BigDecimal findDistance(Location l1, Location l2) {
-        return new BigDecimal(Math.abs(l1.x() - l2.x()) + Math.abs(l1.y() - l2.y()));
-    }
-
     private void setDataBeforeAStar(Map<City, BigDecimal> distances, Map<City, Journey> cameFrom, City start) {
         for (City city : allCities) {
             distances.putIfAbsent(city, new BigDecimal(Double.MAX_VALUE));
@@ -37,11 +32,18 @@ public class RideRight implements ItineraryPlanner {
 
     private PriorityQueue<MyPair> setPriorityQueue(City start) {
         PriorityQueue<MyPair> pq = new PriorityQueue<>(
-            new PairComparatorDistance().thenComparing(new PairComparatorLexicographic()));
+            new PairComparatorDistance());
 
         pq.add(new MyPair(0.0, start));
 
         return pq;
+    }
+
+    private BigDecimal calculateTentativeScore(Map<City, BigDecimal> distances, City currentCity,
+                                               WrapperCity wrapperCity) {
+
+        return distances.get(currentCity).add(wrapperCity.getPriceAfterFees()).add((
+            Location.findDistance(currentCity.location(), wrapperCity.getLocation()).multiply(pricePerKilometer)));
     }
 
     private void validateEndCities(City start, City destination) throws CityNotKnownException {
@@ -84,7 +86,7 @@ public class RideRight implements ItineraryPlanner {
         for (WrapperCity wrapperCity : directConnections) {
             if (wrapperCity.getName().equals(destination.name())) {
                 BigDecimal tentativePrice = wrapperCity.getPriceAfterFees().add(
-                    findDistance(start.location(), destination.location()).multiply(pricePerKilometer));
+                    Location.findDistance(start.location(), destination.location()).multiply(pricePerKilometer));
                 if (tentativePrice.compareTo(currentCheapestPrice) < 0) {
                     currentCheapestPrice = tentativePrice;
                     answer = new Journey(wrapperCity.getVehicle(), start, destination, wrapperCity.getOriginalPrice());
@@ -133,9 +135,7 @@ public class RideRight implements ItineraryPlanner {
                 continue;
             }
             for (WrapperCity wrapperCity : myGraph.get(currentCity)) {
-                BigDecimal tentativeScore = distances.get(currentCity).add(wrapperCity.getPriceAfterFees()).add((
-                    findDistance(currentCity.location(), wrapperCity.getLocation()).multiply(pricePerKilometer)));
-
+                BigDecimal tentativeScore = calculateTentativeScore(distances, currentCity, wrapperCity);
                 if (tentativeScore.compareTo(
                     distances.get(new City(wrapperCity.getName(), wrapperCity.getLocation()))) < 0) {
                     City neighbour = new City(wrapperCity.getName(), wrapperCity.getLocation());
