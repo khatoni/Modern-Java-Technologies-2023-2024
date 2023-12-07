@@ -22,7 +22,11 @@ public class FootballPlayerAnalyzer {
     public FootballPlayerAnalyzer(Reader reader) {
 
         try (var dataReader = new BufferedReader(reader)) {
-            players = dataReader.lines().map(Player::of).toList();
+            dataReader.readLine();
+            players = dataReader
+                .lines()
+                .map(Player::of)
+                .toList();
         } catch (IOException e) {
             throw new UncheckedIOException("A problem occurred while reading from the file", e);
         }
@@ -72,15 +76,25 @@ public class FootballPlayerAnalyzer {
         if (position == null || budget < 0) {
             throw new IllegalArgumentException("The provided position or budget is invalid");
         }
-        return players.stream().filter(player -> player.valueEuro() <= budget)
-            .max(Comparator.comparing(player -> (player.potential() + player.overallRating()) / player.age()));
+        return players
+            .stream()
+            .filter(player -> player.positions().contains(position)
+                && player.valueEuro() <= budget)
+            .max(Comparator.comparingDouble(
+                player -> (player.potential() + player.overallRating()) / (double) player.age()));
     }
 
     public Set<Player> getSimilarPlayers(Player player) {
+        if (player == null) {
+            throw new IllegalArgumentException("The player must not be null");
+        }
         final int positiveMaximum = 3;
         final int negativeMaximum = -3;
-        List<Player> answer = players.stream().filter(p -> p.preferredFoot() == player.preferredFoot())
-            .filter(p -> p.overallRating() - player.overallRating() <= positiveMaximum &&
+        List<Player> answer = players
+            .stream()
+            .filter(p -> p.preferredFoot() == player.preferredFoot()
+                && !Collections.disjoint(p.positions(), player.positions())
+                && p.overallRating() - player.overallRating() <= positiveMaximum &&
                 p.overallRating() - player.overallRating() >= negativeMaximum).toList();
 
         return Collections.unmodifiableSet(new LinkedHashSet<>(answer));

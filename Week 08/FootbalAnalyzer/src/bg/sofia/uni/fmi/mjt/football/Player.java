@@ -15,6 +15,7 @@ public record Player(String name, String fullName, LocalDate birthDate,
     private static final int AGE_INDEX = 3;
     private static final int HEIGHT_INDEX = 4;
     private static final int WEIGHT_INDEX = 5;
+    private static final int POSITIONS_INDEX = 6;
     private static final int NATIONALITY_INDEX = 7;
     private static final int OVERALL_RATING_INDEX = 8;
     private static final int POTENTIAL_INDEX = 9;
@@ -22,6 +23,15 @@ public record Player(String name, String fullName, LocalDate birthDate,
     private static final int WAGE_IDNEX = 11;
     private static final int PREFERRED_FOOT_INDEX = 12;
     private static final String PEAK_ATTRIBUTE_DELIMITER = ";";
+
+    private static List<Position> setPositions(String positions) {
+        List<Position> answer = new ArrayList<>();
+        String[] positionTokens = positions.split(",");
+        for (String element : positionTokens) {
+            answer.add(Position.valueOf(element));
+        }
+        return answer;
+    }
 
     public static Player of(String line) {
         String[] tokens = line.split(PEAK_ATTRIBUTE_DELIMITER);
@@ -35,7 +45,8 @@ public record Player(String name, String fullName, LocalDate birthDate,
         int age = Integer.parseInt(tokens[AGE_INDEX]);
         double heightCm = Double.parseDouble(tokens[HEIGHT_INDEX]);
         double weightKg = Double.parseDouble(tokens[WEIGHT_INDEX]);
-        List<Position> positions = new ArrayList<>();
+        String positionsTokens = tokens[POSITIONS_INDEX];
+        List<Position> positions = setPositions(positionsTokens);
         String nationality = tokens[NATIONALITY_INDEX];
         int overallRating = Integer.parseInt(tokens[OVERALL_RATING_INDEX]);
         int potential = Integer.parseInt(tokens[POTENTIAL_INDEX]);
@@ -52,4 +63,5 @@ public record Player(String name, String fullName, LocalDate birthDate,
             overallRating, potential, valueEuro,
             wageEuro, preferredFoot);
     }
+
 }

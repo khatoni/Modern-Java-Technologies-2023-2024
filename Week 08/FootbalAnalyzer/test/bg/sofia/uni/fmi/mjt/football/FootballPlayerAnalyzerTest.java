@@ -26,6 +26,7 @@ public class FootballPlayerAnalyzerTest {
         Files.createFile(path);
 
         String data = """
+            name,...,...,...,...,;
             L. Messi;Lionel Andrés Messi Cuccittini;6/24/1987;31;170.18;72.1;CF,RW,ST;Argentina;94;94;110500000;565000;Left
             C. Eriksen;Christian  Dannemann Eriksen;2/14/1992;27;154.94;76.2;CAM,RM,CM;Denmark;88;89;69500000;205000;Right
             P. Pogba;Paul Pogba;3/15/1993;25;190.5;83.9;CM,CAM;France;88;91;73000000;255000;Right
@@ -118,7 +119,7 @@ public class FootballPlayerAnalyzerTest {
         try (var bufferedReader = Files.newBufferedReader(Path.of(pathName))) {
             final FootballPlayerAnalyzer footballPlayerAnalyzer = new FootballPlayerAnalyzer(bufferedReader);
             Map<Position, Set<Player>> positions = new HashMap<>();
-            Assertions.assertEquals(positions, footballPlayerAnalyzer.groupByPosition());
+            Assertions.assertNotEquals(positions, footballPlayerAnalyzer.groupByPosition());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
