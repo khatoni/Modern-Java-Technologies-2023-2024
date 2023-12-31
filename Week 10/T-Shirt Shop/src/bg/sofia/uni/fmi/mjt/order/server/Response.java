@@ -19,7 +19,6 @@ public record Response(Status status, String additionalInfo, Collection<Order> o
         return new Response(Status.CREATED, "ORDER_ID=" + id, null);
     }
 
-
     /**
      * Creates a response
      *
@@ -48,18 +47,7 @@ public record Response(Status status, String additionalInfo, Collection<Order> o
      * @return response with status Status.NOT_FOUND and with proper message for additional info
      */
     public static Response notFound(int id) {
-        return new Response(Status.NOT_FOUND, "Order with id = <" + id + ">does not exist.", null);
+        return new Response(Status.NOT_FOUND, "Order with id =" + id + " does not exist.", null);
     }
 
-    public String toText() {
-        String answer = "\"status\":";
-        answer += "\"" + status.toString() + "\"";
-        if (additionalInfo != null) {
-            answer += ", \"additionalInfo\":\"" + additionalInfo + "\"";
-        }
-        if (orders != null) {
-            answer += ", \"orders\": " + orders.toString();
-        }
-        return answer;
-    }
 }

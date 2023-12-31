@@ -31,9 +31,7 @@ public class Server {
 
                 System.out.println("Accepted connection request from client " + clientSocket.getInetAddress());
 
-
                 ClientRequestHandler clientHandler = new ClientRequestHandler(clientSocket, mjtOrderRepository);
-
 
                 executor.execute(clientHandler);
             }
